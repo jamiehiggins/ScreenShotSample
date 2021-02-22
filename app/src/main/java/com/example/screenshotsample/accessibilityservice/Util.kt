@@ -1,5 +1,8 @@
 package com.example.screenshotsample.accessibilityservice
 
+import android.app.admin.DeviceAdminReceiver
+import android.app.admin.DevicePolicyManager
+import android.content.ComponentName
 import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
@@ -8,6 +11,7 @@ import android.provider.Settings.SettingNotFoundException
 import android.text.TextUtils.SimpleStringSplitter
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityManager
+import com.example.screenshotsample.deviceadmin.SampleDeviceAdminReceiver
 
 object Util {
 
@@ -70,5 +74,13 @@ object Util {
             }
         }
         return false
+    }
+
+    fun isDeviceAdminEnabled(context: Context): Boolean {
+        val adminComponent = ComponentName(context, SampleDeviceAdminReceiver::class.java)
+        val devicePolicyManager = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+
+        // Detect if MacroDroid accessibility settings are currently enabled
+        return devicePolicyManager.isAdminActive(adminComponent)
     }
 }

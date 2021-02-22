@@ -4,8 +4,11 @@
     <!-- Strings used for fragments for navigation -->
 
     <string name="take_screenshot">Take Screenshot</string>
-    <string name="accessibility_detail">An example of an accessibility service that can take screenshots</string>
+    <string name="accessibility_detail">An example of an accessibility service that can take screenshots and detect what app is running</string>
     <string name="accessibility_required">Accesibility Required</string>
     <string name="accessibility_description">To use this feature you must enable the Sample Accessibility service in your settings.</string>
     <string name="cannot_launch_accessibility_settings">Cannot launch accessibility settings</string>
+    <string name="device_admin_required">Device Admin Required</string>
+    <string name="device_admin_description">To use this app you must enable Device Admin Access.</string>
+    <string name="blocked">Blocked</string>
 </resources>

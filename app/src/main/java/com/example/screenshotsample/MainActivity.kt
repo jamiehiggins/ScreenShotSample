@@ -1,8 +1,10 @@
 package com.example.screenshotsample
 
 import android.Manifest
-import android.app.Activity
-import android.content.Context
+import android.app.admin.DeviceAdminReceiver
+import android.app.admin.DevicePolicyManager
+import android.content.ActivityNotFoundException
+import android.content.ComponentName
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
@@ -15,8 +17,8 @@ import androidx.lifecycle.lifecycleScope
 import com.araujo.jordan.excuseme.ExcuseMe
 import com.example.screenshotsample.accessibilityservice.SampleAccessibilityService
 import com.example.screenshotsample.accessibilityservice.Util
+import com.example.screenshotsample.deviceadmin.SampleDeviceAdminReceiver
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -36,6 +38,9 @@ class MainActivity : AppCompatActivity() {
 
         if (!Util.isAccessibilityEnabled(this, "SampleAccessibilityService")) {
             showAccessibilityRequiredDialog();
+        }
+        if (!Util.isDeviceAdminEnabled(this)) {
+            showDeviceAdminRequiredDialog();
         }
     }
 
@@ -62,7 +67,37 @@ class MainActivity : AppCompatActivity() {
             try {
                 startActivityForResult(intent, 0)
             } catch (e: Exception) {
-                Toast.makeText(this, getString(R.string.cannot_launch_accessibility_settings), Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this,
+                    getString(R.string.cannot_launch_accessibility_settings),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+        builder.setNegativeButton(android.R.string.cancel) { dialog: DialogInterface?, which: Int -> }
+        builder.setCancelable(false)
+        builder.show()
+    }
+
+    fun showDeviceAdminRequiredDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(R.string.device_admin_required)
+        builder.setMessage(R.string.device_admin_description)
+
+        // Add the buttons
+        builder.setPositiveButton(android.R.string.ok) { dialog: DialogInterface?, id: Int ->
+            try {
+                val adminComponent = ComponentName(this, SampleDeviceAdminReceiver::class.java)
+                // Launch the activity to have the user enable our admin.
+                val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
+                intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, adminComponent)
+                startActivity(intent)
+            } catch (e: ActivityNotFoundException) {
+                Toast.makeText(
+                    getApplicationContext(),
+                    "DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN not supported on this device",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
         builder.setNegativeButton(android.R.string.cancel) { dialog: DialogInterface?, which: Int -> }
